@@ -18,6 +18,7 @@ wine = load_wine()
 
 df = pd.DataFrame(wine.data, columns=wine.feature_names)
 df['target'] = wine.target
+<<<<<<< HEAD
 
 # 문제 요구사항 맞추기
 X = df.drop('target', axis=1)
@@ -77,15 +78,109 @@ plt.ylabel('Importances')
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
+=======
+>>>>>>> B_branch
 
+# 문제 요구사항 맞추기
+X = df.drop('target', axis=1)
+y = df['target']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
 
 ####### A 작업자 작업 수행 #######
 
-''' 코드 작성 바랍니다 '''
+# =========================
+# A_branch: DT 모델링
+# =========================
 
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
+
+dt_model = DecisionTreeClassifier(random_state=42)
+
+dt_params = {
+    'criterion': ['gini', 'entropy'],
+    'max_depth': [2, 5],
+    'min_samples_split': [2, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
+
+dt_grid = GridSearchCV(
+    estimator=dt_model,
+    param_grid=dt_params,
+    cv=5,
+    scoring='accuracy'
+)
+
+dt_grid.fit(X_train, y_train)
+
+print("Best Hyper-parameter", dt_grid.best_params_)
+print("Best Score", dt_grid.best_score_)
+
+best_dt_model = dt_grid.best_estimator_
+
+# Feature Importance
+dt_importance = pd.DataFrame({
+    'Feature': X.columns,
+    'Importances': best_dt_model.feature_importances_
+})
+
+plt.figure(figsize=(14, 5))
+plt.bar(dt_importance['Feature'], dt_importance['Importances'])
+plt.title('Feature Importance')
+plt.xlabel('Feature')
+plt.ylabel('Importances')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
 
 
 ####### B 작업자 작업 수행 #######
 
-''' 코드 작성 바랍니다 '''
+from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score
+
+xgb_model = XGBClassifier(
+    random_state=42,
+    eval_metric='mlogloss'
+)
+
+xgb_params = {
+    'max_depth': [3, 5, 7, 9, 15],
+    'learning_rate': [0.1, 0.01, 0.001],
+    'n_estimators': [50, 100, 200, 300]
+}
+
+xgb_grid = GridSearchCV(
+    estimator=xgb_model,
+    param_grid=xgb_params,
+    cv=5,
+    scoring='accuracy'
+)
+
+xgb_grid.fit(X_train, y_train)
+
+print("XGB Best Params:", xgb_grid.best_params_)
+print("XGB Best Score:", xgb_grid.best_score_)
+
+best_xgb_model = xgb_grid.best_estimator_
+
+xgb_importance = pd.Series(
+    best_xgb_model.feature_importances_,
+    index=X.columns
+)
+
+plt.figure(figsize=(14, 5))
+plt.bar(xgb_importance.index, xgb_importance.values)
+plt.title('XGB Feature Importance')
+plt.xlabel('Feature')
+plt.ylabel('Importances')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
 
