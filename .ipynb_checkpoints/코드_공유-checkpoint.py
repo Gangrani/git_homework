@@ -18,7 +18,7 @@ wine = load_wine()
 
 df = pd.DataFrame(wine.data, columns=wine.feature_names)
 df['target'] = wine.target
-<<<<<<< HEAD
+
 
 # 문제 요구사항 맞추기
 X = df.drop('target', axis=1)
@@ -31,12 +31,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
-# =========================
-# A_branch: DT 모델링
-# =========================
-# =========================
-# DecisionTreeClassifier 모델링
-# =========================
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
@@ -78,8 +72,7 @@ plt.ylabel('Importances')
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
-=======
->>>>>>> B_branch
+
 
 # 문제 요구사항 맞추기
 X = df.drop('target', axis=1)
@@ -93,10 +86,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 ####### A 작업자 작업 수행 #######
-
-# =========================
-# A_branch: DT 모델링
-# =========================
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
